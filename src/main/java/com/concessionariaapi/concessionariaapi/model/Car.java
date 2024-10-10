@@ -9,10 +9,19 @@ public class Car {
     private String model;
     private LocalDate manufacturingDate;
     private Long numberOfKilometers;
+    private Double price;
     private Integer doors;
     private String currency;
     private List<Service> services;
     private Integer countOfOwners;
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
 
     public Integer getId() {
         return id;

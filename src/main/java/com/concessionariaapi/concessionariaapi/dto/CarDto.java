@@ -13,6 +13,7 @@ public record CarDto(
         String numberOfKilometers,
         String doors,
         String currency,
+        String price,
         List<ServiceDto>services,
         String countOfOwners
 ) {
