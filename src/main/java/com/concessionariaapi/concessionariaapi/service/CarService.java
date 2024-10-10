@@ -3,9 +3,13 @@ package com.concessionariaapi.concessionariaapi.service;
 import com.concessionariaapi.concessionariaapi.dto.CarDto;
 import com.concessionariaapi.concessionariaapi.dto.CarResponseDto;
 import com.concessionariaapi.concessionariaapi.dto.ServiceDto;
+import com.concessionariaapi.concessionariaapi.dto.UpdateDto;
+import com.concessionariaapi.concessionariaapi.exception.CarsNotFound;
+import com.concessionariaapi.concessionariaapi.exception.CreateCarException;
 import com.concessionariaapi.concessionariaapi.model.Car;
 import com.concessionariaapi.concessionariaapi.model.Service;
 import com.concessionariaapi.concessionariaapi.repository.CarRepo;
+import org.apache.coyote.BadRequestException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,7 +27,7 @@ public class CarService implements ICarService {
     public CarDto createCar(CarDto carDto) {
         Car car = fromCarDtoToCar(carDto);
         if (carRepo.getCarById(car.getId()) != null) {
-            throw new RuntimeException("This ID already exists");
+           throw new CreateCarException("Car already exists");
         }
         carRepo.createCar(car);
         return carDto;
@@ -32,6 +36,9 @@ public class CarService implements ICarService {
     @Override
     public List<CarResponseDto> getAllCars() {
         List<Car> cars = carRepo.getAllCars();
+        if(cars.isEmpty()) {
+            throw new CarsNotFound("Cars not found");
+        }
         return cars.stream()
                 .map(this::fromCarToCarResponseDto)
                 .toList();
@@ -60,6 +67,22 @@ public class CarService implements ICarService {
 
         return carRepo.getCarsByPrice(priceSinceToDouble, priceUntilToDouble).stream().map(this::fromCarToCarResponseDto).toList();
 
+    }
+
+    @Override
+    public CarResponseDto updateCarPrice(Integer id, UpdateDto updateDto) {
+        Car car = carRepo.updateCarPrice(id, updateDto.price());
+
+        return fromCarToCarResponseDto(car);
+    }
+
+    @Override
+    public void deleteCarById(Integer id) {
+
+        if(carRepo.getCarById(id) == null) {
+            throw new CarsNotFound("Car not found");
+        }
+        carRepo.deleteCarById(id);
     }
 
     public Car fromCarDtoToCar(CarDto carDto) {
@@ -104,7 +127,6 @@ public class CarService implements ICarService {
         );
     }
 
-
     public Service fromSerciceDtoToService(ServiceDto serviceDto) {
         Service service = new Service();
         service.setDate(LocalDate.parse(serviceDto.date()));
@@ -115,12 +137,13 @@ public class CarService implements ICarService {
     }
 
     public ServiceDto fromServiceToServiceDto(Service service) {
-        ServiceDto serviceDto = new ServiceDto(
-                service.getDescription().toString(),
+
+        return new ServiceDto(
+                service.getDescription(),
                 service.getDate().toString(),
                 service.getKilometers().toString()
         );
-
-        return serviceDto;
     }
+
 }
+

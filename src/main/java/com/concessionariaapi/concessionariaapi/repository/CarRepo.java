@@ -1,5 +1,6 @@
 package com.concessionariaapi.concessionariaapi.repository;
 
+import com.concessionariaapi.concessionariaapi.dto.UpdateDto;
 import com.concessionariaapi.concessionariaapi.model.Car;
 import org.springframework.stereotype.Repository;
 
@@ -45,7 +46,14 @@ public class CarRepo implements ICarRepo {
     }
 
     @Override
-    public Car findCarById(Integer id) {
-        return cars.stream().filter(car -> car.getId().equals(id)).findFirst().orElse(null);
+    public Car updateCarPrice(Integer id, Double price) {
+        Car carFounded = getCarById(id);
+        carFounded.setPrice(price);
+        return carFounded;
+    }
+
+    @Override
+    public void deleteCarById(Integer id) {
+        cars.remove(getCarById(id));
     }
 }

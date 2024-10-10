@@ -2,6 +2,7 @@ package com.concessionariaapi.concessionariaapi.controller;
 
 import com.concessionariaapi.concessionariaapi.dto.CarDto;
 import com.concessionariaapi.concessionariaapi.dto.CarResponseDto;
+import com.concessionariaapi.concessionariaapi.dto.UpdateDto;
 import com.concessionariaapi.concessionariaapi.repository.ICarRepo;
 import com.concessionariaapi.concessionariaapi.service.ICarService;
 import org.springframework.http.ResponseEntity;
@@ -41,5 +42,18 @@ public class ConcessionariaController {
     public ResponseEntity<CarDto> getCarById(@PathVariable Integer id) {
         return ResponseEntity.ok(carService.getCarById(id));
     }
+
+    @PatchMapping("v1/api/vehicles/updatePrice/{id}")
+    public ResponseEntity<CarResponseDto> updateCarPrice(@PathVariable Integer id, @RequestBody UpdateDto updateDto) {
+        return ResponseEntity.ok(carService.updateCarPrice(id, updateDto));
+    }
+
+    @DeleteMapping("v1/api/vehicles/{id}")
+    public ResponseEntity<?> deleteCar(@PathVariable Integer id) {
+        carService.deleteCarById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
 
 }
